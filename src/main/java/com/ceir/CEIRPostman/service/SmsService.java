@@ -54,6 +54,8 @@ public class SmsService implements Runnable {
      private OperatorRepository operatorRepository;
      @Autowired
      private VirtualIpAddressUtil virtualIpAddressUtil;
+    @Autowired
+    private AlertService alertService;
 
     int successCount = 0;
     int failureCount = 0;
@@ -90,11 +92,15 @@ public class SmsService implements Runnable {
                   }
               }
           } catch (Exception e) {
-              e.printStackTrace();
+              /*e.printStackTrace();
               log.error("Raising alert1202");
               System.out.println("Raising alert1202");
               Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1202");
-              alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), this.operatorName, "SMS_MODULE", 0));
+              alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), this.operatorName, "SMS_MODULE", 0));*/
+              this.log.error("Raising alert1202");
+              System.out.println("Raising alert1202");
+              this.alertService.raiseAlert("alert1202", "", Integer.valueOf(0));
+              e.printStackTrace();
               System.exit(0);
           }
      }
@@ -114,7 +120,8 @@ public class SmsService implements Runnable {
                          Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1207");
                          log.error("Raising alert1207");
                          System.out.println("Raising alert1207");
-                         alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), notification.getMsisdn(), "SMS_MODULE", 0));
+                         //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), notification.getMsisdn(), "SMS_MODULE", 0));
+                         raiseAlert("alert1207", notification.getMsisdn());
                      }
                      if (otpSmsSentCount >= tpsValue) {
                          long tsdiff = System.currentTimeMillis() - otpTsms;
@@ -128,7 +135,8 @@ public class SmsService implements Runnable {
                              Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1204");
                              log.error("Raising alert1204");
                              System.out.println("Raising alert1204");
-                             alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                             //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                             raiseAlert("alert1204", this.operatorName);
                          }
                          otpTsms = System.currentTimeMillis();
                      }
@@ -148,22 +156,25 @@ public class SmsService implements Runnable {
                              Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1206");
                              log.error("Raising alert1206");
                              System.out.println("Raising alert1206");
-                             alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                             //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                             raiseAlert("alert1206", this.operatorName);
                          } else if (Objects.equals(smsStatus, "SERVICE_UNAVAILABLE")) {
                              Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1203");
                              log.error("Raising alert1203");
                              System.out.println("Raising alert1203");
-                             alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                             //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
 //                             ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Service Unavailable for "+operatorName, featureName, "UPDATE", "Alert1203", 0 , 0, executionStartTime, startTime);
 //                             modulesAuditTrailRepository.save(tacAudit);
+                             raiseAlert("alert1203", this.operatorName);
                          } else {
                              log.info("error in sending Sms for "+operatorNameArg);
                              Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1206");
                              log.error("Raising alert1206");
                              System.out.println("Raising alert1206");
-                             alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                             //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
 //                             ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Send SMS status unknown "+operatorName, featureName, "UPDATE", "Alert1206", 0 , 0, executionStartTime, startTime);
 //                             modulesAuditTrailRepository.save(tacAudit);
+                             raiseAlert("alert1206", this.operatorName);
                          }
                          if(!operatorName.equals("default")) {
                              notification.setSendSmsInterface(operatorName);
@@ -198,7 +209,8 @@ public class SmsService implements Runnable {
                          Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1207");
                          log.error("Raising alert1207");
                          System.out.println("Raising alert1207");
-                         alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), notification.getMsisdn(), "SMS_MODULE", 0));
+                         //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), notification.getMsisdn(), "SMS_MODULE", 0));
+                         raiseAlert("alert1207", notification.getMsisdn());
                      }
                      if (smsSentCount >= tpsValue) {
                          long tsdiff = System.currentTimeMillis() - tsms;
@@ -212,9 +224,10 @@ public class SmsService implements Runnable {
                              Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1204");
                              log.error("Raising alert1204");
                              System.out.println("Raising alert1204");
-                             alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                             //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
 //                             ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "TPS not Achieved", featureName, "UPDATE", "Alert1204", 0 , 0, executionStartTime, startTime);
 //                             modulesAuditTrailRepository.save(tacAudit);
+                             raiseAlert("alert1204", this.operatorName);
                          }
                          tsms = System.currentTimeMillis();
                      }
@@ -238,25 +251,28 @@ public class SmsService implements Runnable {
                                  Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1206");
                                  log.error("Raising alert1206");
                                  System.out.println("Raising alert1206");
-                                 alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                                 //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
 //                                 ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Send SMS failed for "+operatorName, featureName, "UPDATE", "Alert1206", 0 , 0, executionStartTime, startTime);
 //                                 modulesAuditTrailRepository.save(tacAudit);
+                                 raiseAlert("alert1206", this.operatorName);
                              }
                          } else if (Objects.equals(smsStatus, "SERVICE_UNAVAILABLE")) {
                              Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1203");
                              log.error("Raising alert1203");
                              System.out.println("Raising alert1203");
-                             alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                             //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
 //                             ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Service Unavailable for "+operatorName, featureName, "UPDATE", "Alert1203", 0 , 0, executionStartTime, startTime);
 //                             modulesAuditTrailRepository.save(tacAudit);
+                             raiseAlert("alert1203", this.operatorName);
                          } else {
                              log.info("error in sending Sms for "+operatorNameArg);
                              Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1206");
                              log.error("Raising alert1206");
                              System.out.println("Raising alert1206");
-                             alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                             //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
 //                             ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Send SMS status unknown "+operatorName, featureName, "UPDATE", "Alert1206", 0 , 0, executionStartTime, startTime);
 //                             modulesAuditTrailRepository.save(tacAudit);
+                             raiseAlert("alert1206", this.operatorName);
                          }
                          if(!operatorName.equals("default")) {
                              notification.setSendSmsInterface(operatorName);
@@ -291,7 +307,8 @@ public class SmsService implements Runnable {
                          Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1207");
                          log.error("Raising alert1207");
                          System.out.println("Raising alert1207");
-                         alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), notification.getMsisdn(), "SMS_MODULE", 0));
+                         //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), notification.getMsisdn(), "SMS_MODULE", 0));
+                         raiseAlert("alert1207", notification.getMsisdn());
                      }
                      if (smsSentCount >= tpsValue) {
                          long tsdiff = System.currentTimeMillis() - tsms;
@@ -305,9 +322,10 @@ public class SmsService implements Runnable {
                              Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1204");
                              log.error("Raising alert1204");
                              System.out.println("Raising alert1204");
-                             alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                             //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
 //                             ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "TPS not achieved", featureName, "UPDATE", "Alert1204", 0 , 0, executionStartTime, startTime);
 //                             modulesAuditTrailRepository.save(tacAudit);
+                             raiseAlert("alert1204", this.operatorName);
                          }
                          tsms = System.currentTimeMillis();
                      }
@@ -330,17 +348,19 @@ public class SmsService implements Runnable {
                                  Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1206");
                                  log.error("Raising alert1206");
                                  System.out.println("Raising alert1206");
-                                 alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                                 //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
 //                                 ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 200, "NA", "Send SMS failed for "+operatorName, featureName, "UPDATE", "Alert1206", 0 , 0, executionStartTime, startTime);
 //                                 modulesAuditTrailRepository.save(tacAudit);
+                                 raiseAlert("alert1206", this.operatorName);
                              }
                          } else if (Objects.equals(smsStatus, "SERVICE UNAVAILABLE")) {
                              Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1203");
                              log.error("Raising alert1203");
                              System.out.println("Raising alert1203");
-                             alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+                             //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
 //                             ModulesAuditTrail tacAudit = ModulesAuditTrailBuilder.forUpdate(moduleAudiTrailId, 501, "NA", "Service Unavailable for operator "+operatorName, featureName, "UPDATE", "Alert1203", 0 , 0, executionStartTime, startTime);
 //                             modulesAuditTrailRepository.save(tacAudit);
+                             raiseAlert("alert1203", this.operatorName);
                          }
                          if(!operatorName.equals("default")) {
                              notification.setSendSmsInterface(operatorName);
@@ -367,7 +387,8 @@ public class SmsService implements Runnable {
              Optional<CfgFeatureAlert> alert = cfgFeatureAlertRepository.findByAlertId("alert1201");
              log.error("Raising alert1201");
              System.out.println("Raising alert1201");
-             alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+             //alert.ifPresent(cfgFeatureAlert -> raiseAnAlert(cfgFeatureAlert.getAlertId(), operatorName, "SMS_MODULE", 0));
+             raiseAlert("alert1201", this.operatorName);
              e.printStackTrace(); // Or log the exception and handle accordingly
              System.exit(0);
          } catch (Exception e) {
@@ -384,6 +405,11 @@ public class SmsService implements Runnable {
          }
          log.info("exit from service");
      }
+
+    private void raiseAlert(String alertId, String alertMessage) {
+        this.log.warn("Raising {}", alertId);
+        this.alertService.raiseAlert(alertId, alertMessage, Integer.valueOf(0));
+    }
 
     public void raiseAnAlert(String alertCode, String alertMessage, String alertProcess, int userId) {
         try {   // <e>  alertMessage    //      <process_name> alertProcess
